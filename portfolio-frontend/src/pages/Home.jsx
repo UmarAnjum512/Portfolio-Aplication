@@ -22,7 +22,7 @@ const Home = () => {
               </h1>
               <p className="hero-description">
                 Architecting robust backend systems and crafting interactive, high-performance web experiences with{' '}
-                <span className="shiny-sec" style={{ fontWeight: 600 }}>.NET Core, PHP Laravel &amp; React</span>.
+                <span className="shiny-sec" style={{ fontWeight: 600 }}>MERN Stack (MongoDB, Express, React, Node.js), .NET Core &amp; PHP Laravel</span>.
               </p>
             </div>
 

@@ -14,8 +14,9 @@ const servicesData = [
       </svg>
     ),
     items: [
+      'End-to-end MERN applications: MongoDB, Express.js, React & Node.js',
       'Enterprise web systems with ASP.NET Core MVC (C#) & PHP Laravel',
-      'Scalable, secure RESTful APIs with role-based JWT & Session auth',
+      'Scalable, secure RESTful APIs (Express.js / ASP.NET Core) with role-based JWT & Session auth',
       'Robust server-side logic, high throughput & automated workflows',
     ],
   },
@@ -46,8 +47,8 @@ const servicesData = [
       </svg>
     ),
     items: [
+      'NoSQL document management with MongoDB & Mongoose (MERN)',
       'Relational databases with SQL Server & MySQL (Entity Framework Core)',
-      'NoSQL document management with MongoDB & Mongoose',
       'Normalized schema design, query optimization & secure data pipelines',
     ],
   },
@@ -128,7 +129,7 @@ const Services = () => {
             </div>
             <div className="avatar-info">
               <h4>Umar Madni</h4>
-              <p>Full-Stack Developer • .NET &amp; PHP</p>
+              <p>Full-Stack Developer • MERN, .NET &amp; PHP</p>
               <div style={{ marginTop: '0.8rem', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
                 <span className="tech-badge" style={{ fontSize: '0.75rem', padding: '0.35rem 0.85rem' }}>
                   <span style={{ color: 'var(--green-dot)' }}>●</span> Available for Projects

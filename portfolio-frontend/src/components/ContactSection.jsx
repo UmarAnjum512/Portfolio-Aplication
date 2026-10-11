@@ -50,7 +50,7 @@ const ContactSection = () => {
 
             <div className="contact-meta-item">
               <span>Specialization:</span>
-              <strong>ASP.NET Core • PHP Laravel • React</strong>
+              <strong>MERN Stack • ASP.NET Core • PHP Laravel</strong>
             </div>
           </div>
 

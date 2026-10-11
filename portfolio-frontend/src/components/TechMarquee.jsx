@@ -1,9 +1,14 @@
 const technologies = [
+  'MERN Stack',
+  'MongoDB',
+  'Express.js',
+  'React',
+  'Node.js',
+  'Mongoose',
   'ASP.NET Core',
   'C#',
   'PHP',
   'Laravel',
-  'React',
   'Angular',
   'Bootstrap',
   'TailwindCSS',
@@ -12,10 +17,8 @@ const technologies = [
   'Entity Framework Core',
   'JavaScript (ES6+)',
   'jQuery',
-  'Node.js',
-  'Express.js',
-  'MongoDB',
   'RESTful APIs',
+  'JWT Authentication',
   'Git & GitHub',
 ];
 

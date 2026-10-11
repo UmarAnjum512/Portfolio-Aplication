@@ -54,7 +54,7 @@ const Footer = () => {
                 <span style={{ color: 'var(--sec)' }}>✦</span> Styled with Dark Minimal Theme
               </li>
               <li className="footer-link">
-                <span style={{ color: 'var(--sec)' }}>✦</span> Full Backend with Node.js &amp; MongoDB
+                <span style={{ color: 'var(--sec)' }}>✦</span> Full MERN Stack: MongoDB, Express, React &amp; Node.js
               </li>
             </ul>
           </div>

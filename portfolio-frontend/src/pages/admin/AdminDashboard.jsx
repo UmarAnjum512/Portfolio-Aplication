@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -15,9 +15,21 @@ import toast from 'react-hot-toast';
 import { assetUrl } from '../../services/url';
 
 // ============ SIDEBAR ============
-const Sidebar = ({ activeTab, setActiveTab }) => {
+const TAB_TITLES = {
+  dashboard: 'Dashboard',
+  projects: 'Projects',
+  'add-project': 'Add Project',
+  messages: 'Messages',
+};
+
+const Sidebar = ({ activeTab, setActiveTab, open, onClose }) => {
   const { admin, logout } = useAuth();
   const navigate = useNavigate();
+
+  const go = (tab) => {
+    setActiveTab(tab);
+    onClose();
+  };
 
   const handleLogout = () => {
     logout();
@@ -25,63 +37,61 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     toast.success('Logged out successfully!');
   };
 
+  const items = [
+    ['dashboard', '📊', 'Dashboard'],
+    ['projects', '📁', 'Projects'],
+    ['add-project', '➕', 'Add Project'],
+    ['messages', '💬', 'Messages'],
+  ];
+
   return (
-    <aside className="admin-dark-sidebar">
-      <div className="admin-dark-sidebar-header">
-        <p className="section-label shiny-sec" style={{ fontSize: '0.75rem', marginBottom: '0.2rem' }}>PORTFOLIO CONTROL</p>
-        <h3>{admin?.name || 'Umar Madni'}</h3>
-      </div>
-      <nav className="admin-dark-sidebar-nav">
-        <button
-          className={`admin-dark-nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
-          onClick={() => setActiveTab('dashboard')}
-        >
-          <span>📊</span> Dashboard
-        </button>
-        <button
-          className={`admin-dark-nav-btn ${activeTab === 'projects' ? 'active' : ''}`}
-          onClick={() => setActiveTab('projects')}
-        >
-          <span>📁</span> Projects
-        </button>
-        <button
-          className={`admin-dark-nav-btn ${activeTab === 'add-project' ? 'active' : ''}`}
-          onClick={() => setActiveTab('add-project')}
-        >
-          <span>➕</span> Add Project
-        </button>
-        <button
-          className={`admin-dark-nav-btn ${activeTab === 'messages' ? 'active' : ''}`}
-          onClick={() => setActiveTab('messages')}
-        >
-          <span>💬</span> Messages
-        </button>
+    <>
+      <div className={`admin-overlay ${open ? 'show' : ''}`} onClick={onClose} aria-hidden="true" />
+      <aside className={`admin-dark-sidebar ${open ? 'open' : ''}`}>
+        <div className="admin-dark-sidebar-header">
+          <div style={{ minWidth: 0 }}>
+            <p className="section-label shiny-sec" style={{ fontSize: '0.75rem', marginBottom: '0.2rem' }}>PORTFOLIO CONTROL</p>
+            <h3>{admin?.name || 'Umar Madni'}</h3>
+          </div>
+          <button type="button" className="admin-close-btn" onClick={onClose} aria-label="Close menu">✕</button>
+        </div>
+        <nav className="admin-dark-sidebar-nav">
+          {items.map(([tab, icon, label]) => (
+            <button
+              key={tab}
+              className={`admin-dark-nav-btn ${activeTab === tab ? 'active' : ''}`}
+              onClick={() => go(tab)}
+            >
+              <span>{icon}</span> {label}
+            </button>
+          ))}
 
-        <div style={{ height: '1px', backgroundColor: 'var(--border-subtle)', margin: '1rem 0' }}></div>
+          <div style={{ height: '1px', backgroundColor: 'var(--border-subtle)', margin: '1rem 0' }}></div>
 
-        <Link to="/" className="admin-dark-nav-btn" target="_blank">
-          <span>🌐</span> View Live Site
-        </Link>
-        <button
-          className="admin-dark-nav-btn"
-          onClick={handleLogout}
-          style={{ color: '#ff6b6b' }}
-        >
-          <span>🚪</span> Logout
-        </button>
-      </nav>
-    </aside>
+          <Link to="/" className="admin-dark-nav-btn" target="_blank">
+            <span>🌐</span> View Live Site
+          </Link>
+          <button
+            className="admin-dark-nav-btn"
+            onClick={handleLogout}
+            style={{ color: '#ff6b6b' }}
+          >
+            <span>🚪</span> Logout
+          </button>
+        </nav>
+      </aside>
+    </>
   );
 };
 
 // ============ DASHBOARD TAB ============
 const DashboardTab = ({ projects, messages }) => (
   <div>
-    <h2 style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--white-pure)', marginBottom: '1.5rem' }}>
+    <h2 className="admin-page-title" style={{ marginBottom: '1.5rem' }}>
       Analytics &amp; Overview
     </h2>
 
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+    <div className="admin-stats-grid">
       <div className="admin-stat-card">
         <span style={{ color: 'var(--white-icon)', fontSize: '0.9rem' }}>Total Projects</span>
         <span className="admin-stat-number">{projects.length}</span>
@@ -104,23 +114,14 @@ const DashboardTab = ({ projects, messages }) => (
       </div>
     </div>
 
-    <div className="panel-card" style={{ padding: '1.75rem' }}>
+    <div className="panel-card">
       <h3 style={{ fontSize: '1.25rem', color: 'var(--white-pure)', marginBottom: '1.25rem' }}>Recent Projects</h3>
       {projects.length === 0 ? (
         <p style={{ color: 'var(--white-icon)' }}>No projects available.</p>
       ) : (
         projects.slice(0, 5).map(p => (
-          <div
-            key={p._id}
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '0.85rem 0',
-              borderBottom: '1px solid var(--border-subtle)',
-            }}
-          >
-            <div>
+          <div key={p._id} className="admin-recent-row">
+            <div style={{ minWidth: 0, overflowWrap: 'anywhere' }}>
               <strong style={{ color: 'var(--white-pure)', fontSize: '1.05rem' }}>{p.title}</strong>
               <span style={{ color: 'var(--white-icon)', fontSize: '0.85rem', marginLeft: '0.75rem' }}>({p.category})</span>
             </div>
@@ -168,8 +169,8 @@ const ProjectsTab = ({ projects, setProjects, setActiveTab, setEditProject }) =>
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--white-pure)' }}>Manage Projects</h2>
+      <div className="admin-page-head">
+        <h2 className="admin-page-title">Manage Projects</h2>
         <button
           className="detail-btn-primary"
           onClick={() => setActiveTab('add-project')}
@@ -179,7 +180,7 @@ const ProjectsTab = ({ projects, setProjects, setActiveTab, setEditProject }) =>
         </button>
       </div>
 
-      <div className="panel-card" style={{ padding: '0.5rem', overflowX: 'auto' }}>
+      <div className="panel-card admin-table-wrap">
         <table className="admin-dark-table">
           <thead>
             <tr>
@@ -193,14 +194,14 @@ const ProjectsTab = ({ projects, setProjects, setActiveTab, setEditProject }) =>
           <tbody>
             {projects.length === 0 ? (
               <tr>
-                <td colSpan="5" style={{ textAlign: 'center', padding: '3rem', color: 'var(--white-icon)' }}>
+                <td colSpan="5" className="admin-empty-cell" style={{ textAlign: 'center', padding: '3rem', color: 'var(--white-icon)' }}>
                   No projects yet. Click "+ Add New Project" to get started!
                 </td>
               </tr>
             ) : (
               projects.map(project => (
                 <tr key={project._id}>
-                  <td>
+                  <td data-label="Preview">
                     {project.thumbnail ? (
                       <img
                         src={assetUrl(project.thumbnail)}
@@ -213,15 +214,15 @@ const ProjectsTab = ({ projects, setProjects, setActiveTab, setEditProject }) =>
                       </div>
                     )}
                   </td>
-                  <td>
+                  <td data-label="Title">
                     <strong>{project.title}</strong>
                   </td>
-                  <td>
+                  <td data-label="Category">
                     <span className="project-category-tag" style={{ position: 'static' }}>
                       {project.category}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Visibility">
                     <span
                       style={{
                         padding: '0.25rem 0.75rem',
@@ -235,8 +236,8 @@ const ProjectsTab = ({ projects, setProjects, setActiveTab, setEditProject }) =>
                       {project.isVisible ? 'Live' : 'Hidden'}
                     </span>
                   </td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <td data-label="Actions" className="admin-cell-actions">
+                    <div className="admin-actions">
                       <button
                         className="icon-btn"
                         style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
@@ -360,8 +361,8 @@ const AddProjectTab = ({ setActiveTab, setProjects, editProject, setEditProject 
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--white-pure)' }}>
+      <div className="admin-page-head">
+        <h2 className="admin-page-title">
           {isEdit ? 'Edit Project' : 'Add New Project'}
         </h2>
         <button
@@ -372,11 +373,11 @@ const AddProjectTab = ({ setActiveTab, setProjects, editProject, setEditProject 
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      <form onSubmit={handleSubmit} className="admin-form">
         {/* Core Info */}
         <div className="panel-card">
           <h3 style={{ fontSize: '1.25rem', color: 'var(--white-pure)', marginBottom: '1.5rem' }}>Basic Details</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.25rem' }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--white-icon)', marginBottom: '0.4rem' }}>
                 Project Title *
@@ -487,7 +488,7 @@ const AddProjectTab = ({ setActiveTab, setProjects, editProject, setEditProject 
         {/* Tech Stack */}
         <div className="panel-card">
           <h3 style={{ fontSize: '1.25rem', color: 'var(--white-pure)', marginBottom: '1.5rem' }}>Tech Stack Details</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1.25rem' }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--sec)', fontWeight: '600', marginBottom: '0.4rem' }}>
                 Frontend
@@ -496,7 +497,7 @@ const AddProjectTab = ({ setActiveTab, setProjects, editProject, setEditProject 
                 type="text"
                 name="techStack.frontend"
                 className="dark-input"
-                placeholder="e.g. React, Bootstrap, Chart.js"
+                placeholder="e.g. React, Tailwind, Chart.js"
                 value={form.techStack.frontend}
                 onChange={handleChange}
               />
@@ -509,7 +510,7 @@ const AddProjectTab = ({ setActiveTab, setProjects, editProject, setEditProject 
                 type="text"
                 name="techStack.backend"
                 className="dark-input"
-                placeholder="e.g. ASP.NET Core MVC (C#), Laravel"
+                placeholder="e.g. Node.js + Express, ASP.NET Core MVC (C#), Laravel"
                 value={form.techStack.backend}
                 onChange={handleChange}
               />
@@ -522,7 +523,7 @@ const AddProjectTab = ({ setActiveTab, setProjects, editProject, setEditProject 
                 type="text"
                 name="techStack.database"
                 className="dark-input"
-                placeholder="e.g. SQL Server, MySQL, MongoDB"
+                placeholder="e.g. MongoDB, SQL Server, MySQL"
                 value={form.techStack.database}
                 onChange={handleChange}
               />
@@ -545,7 +546,7 @@ const AddProjectTab = ({ setActiveTab, setProjects, editProject, setEditProject 
 
         {/* Panels */}
         <div className="panel-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <div className="admin-section-head">
             <h3 style={{ fontSize: '1.25rem', color: 'var(--white-pure)' }}>
               Sub-Panels / Modules (User Panel, Admin, etc.)
             </h3>
@@ -567,6 +568,7 @@ const AddProjectTab = ({ setActiveTab, setProjects, editProject, setEditProject 
             form.panels.map((panel, idx) => (
               <div
                 key={idx}
+                className="admin-subpanel"
                 style={{
                   border: '1px solid var(--border-subtle)',
                   borderRadius: '1rem',
@@ -575,7 +577,7 @@ const AddProjectTab = ({ setActiveTab, setProjects, editProject, setEditProject 
                   backgroundColor: 'rgba(255,255,255,0.02)',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
                   <strong style={{ color: 'var(--sec)' }}>Panel #{idx + 1}</strong>
                   <button
                     type="button"
@@ -586,7 +588,7 @@ const AddProjectTab = ({ setActiveTab, setProjects, editProject, setEditProject 
                   </button>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1rem' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--white-icon)', marginBottom: '0.3rem' }}>Title</label>
                     <input
@@ -644,7 +646,7 @@ const AddProjectTab = ({ setActiveTab, setProjects, editProject, setEditProject 
           )}
         </div>
 
-        <div style={{ textAlign: 'right' }}>
+        <div className="admin-submit-row">
           <button type="submit" className="detail-btn-primary" disabled={loading} style={{ border: 'none', cursor: 'pointer' }}>
             {loading ? 'Saving to Database...' : (isEdit ? 'Update Project →' : 'Publish Project →')}
           </button>
@@ -679,7 +681,7 @@ const MessagesTab = ({ messages, setMessages }) => {
 
   return (
     <div>
-      <h2 style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--white-pure)', marginBottom: '2rem' }}>
+      <h2 className="admin-page-title" style={{ marginBottom: '2rem' }}>
         Inquiries &amp; Messages
       </h2>
 
@@ -699,8 +701,8 @@ const MessagesTab = ({ messages, setMessages }) => {
                 padding: '1.5rem',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
-                <div>
+              <div className="admin-msg-head">
+                <div style={{ minWidth: 0, overflowWrap: 'anywhere' }}>
                   <strong style={{ color: 'var(--white-pure)', fontSize: '1.1rem' }}>{msg.name}</strong>{' '}
                   <span style={{ color: 'var(--white-icon)', fontSize: '0.9rem' }}>&lt;{msg.email}&gt;</span>
                   {!msg.isRead && (
@@ -710,7 +712,7 @@ const MessagesTab = ({ messages, setMessages }) => {
                   )}
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div className="admin-msg-meta">
                   <span style={{ color: 'var(--white-icon)', fontSize: '0.8rem' }}>
                     {new Date(msg.createdAt).toLocaleDateString('en-PK', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </span>
@@ -733,7 +735,7 @@ const MessagesTab = ({ messages, setMessages }) => {
                 </div>
               </div>
 
-              <p style={{ color: 'var(--white)', fontSize: '0.95rem', lineHeight: '1.7', whiteSpace: 'pre-line' }}>
+              <p style={{ color: 'var(--white)', fontSize: '0.95rem', lineHeight: '1.7', whiteSpace: 'pre-line', overflowWrap: 'anywhere' }}>
                 {msg.message}
               </p>
             </div>
@@ -751,6 +753,30 @@ const AdminDashboard = () => {
   const [messages, setMessages] = useState([]);
   const [editProject, setEditProject] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const closeSidebar = useCallback(() => setSidebarOpen(false), []);
+
+  // Mobile drawer: Esc se band, desktop size par auto-close, open hone par page scroll lock
+  useEffect(() => {
+    const onKey = (e) => e.key === 'Escape' && setSidebarOpen(false);
+    const onResize = () => window.innerWidth > 900 && setSidebarOpen(false);
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('resize', onResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = sidebarOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [sidebarOpen]);
+
+  // Tab badalne par top par scroll karo (mobile par zaroori)
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [activeTab]);
 
   useEffect(() => {
     Promise.all([getAllProjects(), getMessages()])
@@ -772,7 +798,19 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dark-layout">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} open={sidebarOpen} onClose={closeSidebar} />
+      <div className="admin-dark-content">
+      <header className="admin-mobile-bar">
+        <button type="button" className="admin-menu-btn" onClick={() => setSidebarOpen(true)} aria-label="Open menu" aria-expanded={sidebarOpen}>
+          ☰
+        </button>
+        <span className="admin-mobile-title">{TAB_TITLES[activeTab]}</span>
+        {messages.some((m) => !m.isRead) && (
+          <button type="button" className="admin-mobile-badge" onClick={() => setActiveTab('messages')} aria-label="Unread messages">
+            {messages.filter((m) => !m.isRead).length}
+          </button>
+        )}
+      </header>
       <main className="admin-dark-main">
         {activeTab === 'dashboard' && <DashboardTab projects={projects} messages={messages} />}
         {activeTab === 'projects' && (
@@ -795,6 +833,7 @@ const AdminDashboard = () => {
           <MessagesTab messages={messages} setMessages={setMessages} />
         )}
       </main>
+      </div>
     </div>
   );
 };
