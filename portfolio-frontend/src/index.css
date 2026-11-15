@@ -207,23 +207,24 @@ body {
 }
 
 .nav-indicator {
-  position: absolute;
-  left: -0.85rem;
-  top: 50%;
-  transform: translateY(-50%) scale(0);
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: var(--green-dot);
+  left: 0.6rem;
+  right: 0.6rem;
+  top: auto;
+  bottom: -3px;
+  width: auto;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--green-dot), transparent);
   box-shadow: 0 0 10px var(--green-dot);
-  opacity: 0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scaleX(0);
+  transform-origin: center;
 }
-
+.nav-link.active .nav-indicator,
+.nav-link:hover .nav-indicator { opacity: 1; transform: scaleX(1); }
+.nav-link:not(.active):hover .nav-indicator { opacity: 0.45; }
 @media (max-width: 767px) {
-  .nav-indicator {
-    display: none;
-  }
+  .nav-indicator { display: block; left: 0.3rem; right: 0.3rem; bottom: -4px; }
+}
   .nav-link {
     flex-direction: column;
     gap: 0.2rem;
@@ -232,7 +233,6 @@ body {
   .mobile-icon {
     display: block !important;
   }
-}
 
 /* =========================================================
    HERO SECTION
@@ -615,7 +615,11 @@ body {
   grid-template-columns: 1fr;
   gap: 2.5rem;
 }
-
+@media (min-width: 1024px) {
+  .project-grid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .project-card-body { padding: 1.25rem; }
+  .project-card-heading { font-size: 1.15rem; }
+}
 @media (min-width: 768px) {
   .projects-grid {
     grid-template-columns: repeat(2, 1fr);
