@@ -5,8 +5,8 @@ export const profile = {
   tagline: 'MERN Stack • ASP.NET Core • PHP Laravel',
   location: 'Karachi, Pakistan',
   email: 'umaranjum5120@gmail.com',
-  phone: '+92 317 2043469',
-  whatsapp: '923172043469',
+  phone: '+92 317 2043468',
+  whatsapp: '923172043468',
   github: 'https://github.com/UmarAnjum512',
   linkedin: 'https://linkedin.com/in/umar-anjum-a33660383',
 };
