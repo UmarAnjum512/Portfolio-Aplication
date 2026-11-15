@@ -11,3 +11,6 @@ export const assetUrl = (path) => {
   if (path.startsWith('/api/')) return API_BASE + path.slice(4);
   return path;
 };
+
+// Backend se CV download / view ka URL
+export const resumeUrl = (view = false) => `${API_BASE}/resume/download${view ? '?view=1' : ''}`;

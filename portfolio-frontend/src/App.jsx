@@ -4,9 +4,15 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import ProjectDetail from './pages/ProjectDetail';
+import AboutPage from './pages/AboutPage';
+import ExperiencePage from './pages/ExperiencePage';
+import ServicesPage from './pages/ServicesPage';
+import ProjectsPage from './pages/ProjectsPage';
+import ContactPage from './pages/ContactPage';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import './index.css';
+import './pro.css';
 
 function App() {
   return (
@@ -25,6 +31,11 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/experience" element={<ExperiencePage />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route path="/project/:id" element={<ProjectDetail />} />
 
           {/* Admin Routes */}

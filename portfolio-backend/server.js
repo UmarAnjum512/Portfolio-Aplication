@@ -55,6 +55,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/projects', require('./routes/projects'));
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/images', require('./routes/images'));
+app.use('/api/resume', require('./routes/resume'));
 
 // 404
 app.use((req, res) => res.status(404).json({ message: 'Route not found' }));
@@ -63,7 +64,7 @@ app.use((req, res) => res.status(404).json({ message: 'Route not found' }));
 app.use((err, req, res, next) => {
   console.error(err.stack || err.message);
   const status = err.status || (err.code === 'LIMIT_FILE_SIZE' ? 400 : 500);
-  const message = err.code === 'LIMIT_FILE_SIZE' ? 'Image 4MB se choti honi chahiye' : err.message;
+  const message = err.code === 'LIMIT_FILE_SIZE' ? 'File 4MB se choti honi chahiye' : err.message;
   res.status(status).json({ message: message || 'Something went wrong!' });
 });
 

@@ -10,9 +10,13 @@ import {
   markMessageRead,
   createProject,
   updateProject,
+  getResumeInfo,
+  uploadResume,
+  deleteResume,
 } from '../../services/api';
 import toast from 'react-hot-toast';
-import { assetUrl } from '../../services/url';
+import { assetUrl, resumeUrl } from '../../services/url';
+import { FileIcon, DownloadIcon, EyeIcon } from '../../components/Icons';
 
 // ============ SIDEBAR ============
 const TAB_TITLES = {
@@ -20,6 +24,7 @@ const TAB_TITLES = {
   projects: 'Projects',
   'add-project': 'Add Project',
   messages: 'Messages',
+  resume: 'Resume / CV',
 };
 
 const Sidebar = ({ activeTab, setActiveTab, open, onClose }) => {
@@ -42,6 +47,7 @@ const Sidebar = ({ activeTab, setActiveTab, open, onClose }) => {
     ['projects', '📁', 'Projects'],
     ['add-project', '➕', 'Add Project'],
     ['messages', '💬', 'Messages'],
+    ['resume', '📄', 'Resume / CV'],
   ];
 
   return (
@@ -746,11 +752,127 @@ const MessagesTab = ({ messages, setMessages }) => {
   );
 };
 
+// ============ RESUME / CV TAB ============
+const formatSize = (bytes = 0) =>
+  bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(2)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
+
+const ResumeTab = ({ resume, setResume }) => {
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+
+  const handlePick = (e) => {
+    const picked = e.target.files?.[0];
+    if (!picked) return;
+    if (picked.type !== 'application/pdf' && !picked.name.toLowerCase().endsWith('.pdf')) {
+      toast.error('Sirf PDF file select karein');
+      e.target.value = '';
+      return;
+    }
+    if (picked.size > 4 * 1024 * 1024) {
+      toast.error('PDF 4MB se choti honi chahiye');
+      e.target.value = '';
+      return;
+    }
+    setFile(picked);
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+    setUploading(true);
+    try {
+      const res = await uploadResume(file);
+      setResume(res.data);
+      setFile(null);
+      toast.success('CV uploaded! Ab portfolio par yahi CV download hogi.');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'CV upload nahi ho saki');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm('Kya aap waqai CV delete karna chahte hain?')) return;
+    try {
+      await deleteResume();
+      setResume({ exists: false });
+      toast.success('CV deleted');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'CV delete nahi ho saki');
+    }
+  };
+
+  return (
+    <div>
+      <h2 className="admin-page-title" style={{ marginBottom: '1.5rem' }}>Resume / CV</h2>
+
+      <div className="panel-card cv-panel">
+        <div className="cv-status">
+          <span className="icon-chip"><FileIcon size={22} /></span>
+          {resume.exists ? (
+            <div className="cv-status-text">
+              <strong>{resume.fileName}</strong>
+              <span>
+                {formatSize(resume.size)} • Updated {new Date(resume.updatedAt).toLocaleString()}
+              </span>
+            </div>
+          ) : (
+            <div className="cv-status-text">
+              <strong>Backend par abhi koi CV nahi hai</strong>
+              <span>Jab tak upload nahi karte, website purani built-in CV dikhayegi.</span>
+            </div>
+          )}
+          {resume.exists && (
+            <div className="cv-actions">
+              <a href={resumeUrl(true)} target="_blank" rel="noreferrer" className="detail-btn-outline">
+                <EyeIcon size={18} /> <span>Preview</span>
+              </a>
+              <a href={resumeUrl()} className="detail-btn-outline">
+                <DownloadIcon size={18} /> <span>Download</span>
+              </a>
+              <button type="button" className="detail-btn-outline" onClick={handleDelete} style={{ color: '#ff6b6b', cursor: 'pointer' }}>
+                <span>Delete</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+        <label className="cv-dropzone">
+          <input type="file" accept="application/pdf,.pdf" onChange={handlePick} />
+          <FileIcon size={30} />
+          {file ? (
+            <>
+              <strong>{file.name}</strong>
+              <span>{formatSize(file.size)} • Upload dabane se pehle change karna ho to dobara click karein</span>
+            </>
+          ) : (
+            <>
+              <strong>{resume.exists ? 'Nayi CV select karein (purani replace ho jayegi)' : 'CV (PDF) select karein'}</strong>
+              <span>Sirf PDF • maximum 4MB</span>
+            </>
+          )}
+        </label>
+
+        <button
+          type="button"
+          className="dark-submit-btn"
+          onClick={handleUpload}
+          disabled={!file || uploading}
+          style={{ opacity: !file || uploading ? 0.6 : 1 }}
+        >
+          {uploading ? 'Uploading...' : resume.exists ? 'Replace CV →' : 'Upload CV →'}
+        </button>
+      </div>
+    </div>
+  );
+};
+
 // ============ MAIN ADMIN DASHBOARD ============
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [projects, setProjects] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [resume, setResume] = useState({ exists: false });
   const [editProject, setEditProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -779,10 +901,11 @@ const AdminDashboard = () => {
   }, [activeTab]);
 
   useEffect(() => {
-    Promise.all([getAllProjects(), getMessages()])
-      .then(([pRes, mRes]) => {
+    Promise.all([getAllProjects(), getMessages(), getResumeInfo().catch(() => ({ data: { exists: false } }))])
+      .then(([pRes, mRes, rRes]) => {
         setProjects(pRes.data.data);
         setMessages(mRes.data.data);
+        setResume(rRes.data);
       })
       .catch(() => toast.error('Failed to load portfolio data!'))
       .finally(() => setLoading(false));
@@ -832,6 +955,7 @@ const AdminDashboard = () => {
         {activeTab === 'messages' && (
           <MessagesTab messages={messages} setMessages={setMessages} />
         )}
+        {activeTab === 'resume' && <ResumeTab resume={resume} setResume={setResume} />}
       </main>
       </div>
     </div>

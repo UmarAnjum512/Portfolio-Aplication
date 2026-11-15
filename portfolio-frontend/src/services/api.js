@@ -54,4 +54,13 @@ export const getMessages = () => API.get('/contact');
 export const markMessageRead = (id) => API.patch(`/contact/${id}/read`);
 export const deleteMessage = (id) => API.delete(`/contact/${id}`);
 
+// ==================== RESUME / CV ====================
+export const getResumeInfo = () => API.get('/resume/info');
+export const uploadResume = (file) => {
+  const fd = new FormData();
+  fd.append('resume', file);
+  return API.post('/resume', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+};
+export const deleteResume = () => API.delete('/resume');
+
 export default API;
