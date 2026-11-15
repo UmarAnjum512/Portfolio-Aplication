@@ -13,6 +13,7 @@ import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import './index.css';
 import './pro.css';
+import './navbar.css';
 
 function App() {
   return (

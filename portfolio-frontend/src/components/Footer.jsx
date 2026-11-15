@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { profile } from '../data/profile';
+import Logo from './Logo';
 import useResume from '../hooks/useResume';
 import { GithubIcon, LinkedinIcon, MailIcon } from './Icons';
 
@@ -10,7 +11,7 @@ const Footer = () => {
       <div className="site-container">
         <div className="footer-top-grid">
           <div className="footer-col">
-            <h4 className="footer-brand">{profile.name}</h4>
+            <div className="footer-brand"><Logo /></div>
             <p className="footer-about">
               Full Stack Developer from Karachi building fast, secure and responsive web applications
               with MERN, ASP.NET Core and PHP Laravel.

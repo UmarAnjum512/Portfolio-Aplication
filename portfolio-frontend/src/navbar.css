@@ -1,0 +1,125 @@
+/* =========================================================
+   HEADER / NAVBAR (normal top bar) - purani .main-nav CSS ab use nahi hoti
+   ========================================================= */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 300;
+  background: rgba(16, 16, 16, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid transparent;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.site-header.is-scrolled {
+  background: rgba(16, 16, 16, 0.92);
+  border-bottom-color: var(--border-subtle);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  height: 68px;
+}
+
+/* ---------- Logo ---------- */
+.brand { display: inline-flex; text-decoration: none; }
+.logo { display: inline-flex; align-items: center; gap: 0.7rem; }
+.logo svg { flex-shrink: 0; transition: transform 0.35s ease; }
+.brand:hover .logo svg { transform: rotate(-6deg) scale(1.06); }
+.logo-text { color: var(--white-pure); font-size: 1.1rem; font-weight: 600; letter-spacing: -0.2px; white-space: nowrap; }
+.logo-text b { color: var(--sec); font-weight: 700; }
+
+/* ---------- Desktop nav ---------- */
+.site-nav { display: flex; align-items: center; gap: 1.5rem; }
+.site-nav ul { display: flex; align-items: center; gap: 0.15rem; list-style: none; margin: 0; padding: 0; }
+.site-link {
+  position: relative;
+  display: block;
+  padding: 0.55rem 0.85rem;
+  color: var(--white-icon);
+  font-size: 0.93rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+.site-link:hover, .site-link.active { color: var(--white-pure); }
+.site-link::after {
+  content: '';
+  position: absolute;
+  left: 0.85rem;
+  right: 0.85rem;
+  bottom: 2px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--green-dot), transparent);
+  box-shadow: 0 0 10px var(--green-dot);
+  opacity: 0;
+  transform: scaleX(0);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+.site-link.active::after { opacity: 1; transform: scaleX(1); }
+.site-link:not(.active):hover::after { opacity: 0.45; transform: scaleX(1); }
+.header-cta { padding: 0.55rem 1.3rem; font-size: 0.9rem; border-radius: 9999px; }
+
+/* ---------- Hamburger ---------- */
+.menu-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 0 11px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.8rem;
+  cursor: pointer;
+}
+.menu-btn span { display: block; height: 2px; border-radius: 2px; background: var(--white-pure); transition: transform 0.3s ease, opacity 0.2s ease; }
+.menu-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.menu-btn.open span:nth-child(2) { opacity: 0; }
+.menu-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ---------- Mobile / tablet ---------- */
+@media (max-width: 991px) {
+  .header-inner { height: 64px; }
+  .menu-btn { display: flex; }
+  .site-nav {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 1.25rem;
+    padding: 1.25rem 1.5rem 2rem;
+    overflow-y: auto;
+    background: rgba(16, 16, 16, 0.98);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+  }
+  .site-nav.open { opacity: 1; visibility: visible; transform: none; }
+  .site-nav ul { flex-direction: column; align-items: stretch; gap: 0.35rem; }
+  .site-link { padding: 0.95rem 1rem; font-size: 1.05rem; border-radius: 0.85rem; }
+  .site-link::after { display: none; }
+  .site-link.active { background: rgba(164, 118, 255, 0.12); color: var(--white-pure); }
+  .header-cta { justify-content: center; padding: 0.9rem 1.3rem; font-size: 1rem; }
+}
+@media (max-width: 400px) {
+  .logo-text { font-size: 1rem; }
+}
+
+/* ---------- Layout adjust (ab navbar fixed nahi, sticky hai) ---------- */
+.hero-section { padding-top: 4.5rem !important; }
+@media (min-width: 768px) { .hero-section { padding-top: 6rem !important; } }
+.page-top { height: 1.5rem !important; }
+.scroll-progress { z-index: 400; }
+.back-to-top { bottom: 1.25rem !important; right: 1.25rem !important; }
+@media (min-width: 768px) { .back-to-top { bottom: 1.75rem !important; right: 1.75rem !important; } }
