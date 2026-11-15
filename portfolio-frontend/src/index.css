@@ -133,22 +133,31 @@ body {
 
 /* Desktop: Top Floating Pill */
 @media (min-width: 768px) {
-  .main-nav {
-    top: 1.5rem;
-    width: auto;
-    min-width: 480px;
-    max-width: 90%;
-    background-color: var(--component-bg);
-    border: 1px solid var(--border-subtle);
-    border-radius: 9999px;
-    padding: 0.5rem 1.25rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  .main-nav .nav-link svg,
+  .main-nav .nav-link .mobile-icon { display: none !important; }
+  .main-nav .nav-link {
+    flex-direction: row !important;
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.92rem !important;
   }
-  
-  .main-nav.scrolling {
-    border-color: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+  .main-nav .nav-link .nav-indicator {
+    display: block !important;
+    position: absolute;
+    left: 0.75rem !important;
+    right: 0.75rem !important;
+    top: auto !important;
+    bottom: 0 !important;
+    width: auto !important;
+    height: 2px !important;
+    border-radius: 2px;
+    background: linear-gradient(90deg, transparent, var(--green-dot), transparent) !important;
+    box-shadow: 0 0 10px var(--green-dot);
+    opacity: 0;
+    transform: scaleX(0) !important;
+    transform-origin: center;
   }
+  .main-nav .nav-link.active .nav-indicator { opacity: 1; transform: scaleX(1) !important; }
+  .main-nav .nav-link:not(.active):hover .nav-indicator { opacity: 0.45; transform: scaleX(1) !important; }
 }
 
 /* Mobile: Bottom Floating Dock */
@@ -615,11 +624,10 @@ body {
   grid-template-columns: 1fr;
   gap: 2.5rem;
 }
-@media (min-width: 1024px) {
-  .project-grid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-  .project-card-body { padding: 1.25rem; }
-  .project-card-heading { font-size: 1.15rem; }
+@media (min-width: 992px) {
+  .project-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 1.5rem !important; }
 }
+
 @media (min-width: 768px) {
   .projects-grid {
     grid-template-columns: repeat(2, 1fr);
