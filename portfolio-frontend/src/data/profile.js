@@ -56,16 +56,14 @@ export const languages = [
 
 export const experience = [
   {
-    role: 'Web Developer',
-    company: 'Digitemb',
-    period: '1 Year',
+    role: 'Data Entry Operator',
+    company: 'HQ360',
+    period: 'May 2026 – Oct 2026',
     points: [
-      'Built responsive web apps with React, JavaScript, HTML5, CSS3 and Bootstrap, achieving 99% mobile compatibility.',
-      'Developed REST APIs and database models using Node.js, PHP, C# .NET MVC, MySQL and MongoDB.',
-      'Improved performance through Git workflows and code reviews, cutting load times by up to 35%.',
-      'Collaborated with design and PM teams to deliver milestones ahead of sprint deadlines.',
+      'Entered and updated company data in Microsoft Excel, ensuring accuracy and consistency.',
+      'Maintained organized, up-to-date spreadsheets and records with close attention to detail.',
     ],
-    tags: ['React', 'Node.js', 'PHP', '.NET MVC', 'MongoDB', 'MySQL'],
+    tags: ['Microsoft Excel', 'Data Entry', 'Record Keeping', 'Attention to Detail'],
   },
 ];
 
